@@ -37,6 +37,7 @@ public class ActiveSubTree { //note that this object is not serializable
     //a solver object that is used to solve this tree few seconds at a time 
     private Solver solver ;
  
+    private NodeAttachment root ;
     
     /**
      * 
@@ -46,6 +47,9 @@ public class ActiveSubTree { //note that this object is not serializable
      * Every active subtree starts its life as a tree created from a farmed out leaf node
      */
     public ActiveSubTree (NodeAttachment attachment) throws IloException {
+        
+        //note down the root
+        root = attachment;
         
         //initialize the CPLEX object
         cplex= new IloCplex();   
@@ -60,6 +64,10 @@ public class ActiveSubTree { //note that this object is not serializable
         numEasyLeafNodes=0;
         if (attachment.isEasy()) numEasyLeafNodes++; else numHardLeafNodes++;
         
+    }
+    
+    public   NodeAttachment getRoot (){
+        return root;
     }
     
     public Solution getSolution () throws IloException {

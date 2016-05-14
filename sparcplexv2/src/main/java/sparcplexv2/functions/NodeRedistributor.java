@@ -27,6 +27,20 @@ public class NodeRedistributor {
          * similar # of subtrees per partition
          */
         
+        /**
+         * Can solve a simple CPLEX problem for this.
+         * OR
+         * A simple heuristic like this:
+         * 1) find the partition H that is highest above the threshold and has farmed out nodes
+         * 2) find the partition B that is lowest below the threshold
+         * 3) move one leaf from H to B
+         * 4) repeat until no more leafs left to move, or every partition is above threshold
+         * 5) if some partitions still have leafs, repeat the above steps, but this time instead of threshold, try to reach average.
+         * 
+         */
+        
+        //Also we have the drastic option of aborting a subtree being solved, and restarting it on another partition
+        
         return new NodeRedistributionMap();
     }
 
