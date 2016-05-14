@@ -28,6 +28,8 @@ public class SubtreeNodeCounter implements FlatMapFunction<Iterator<Tuple2<Integ
           
         int numEasyNodes = Constants.ZERO, numHardNodes =Constants.ZERO;
         
+        int subtreeCount = Constants.ZERO;
+        
         //our return value
         List<NodetypeCount> attributeList = new ArrayList<NodetypeCount>();
         
@@ -39,6 +41,8 @@ public class SubtreeNodeCounter implements FlatMapFunction<Iterator<Tuple2<Integ
             
             numEasyNodes += tree.getNumEasyLeafNodes()  ;
             numHardNodes += tree.getNumHardLeafNodes() ;
+            
+            subtreeCount++;
          
         }
         
@@ -46,6 +50,7 @@ public class SubtreeNodeCounter implements FlatMapFunction<Iterator<Tuple2<Integ
         attr.setID(tuple._1);
         attr.setNumEasyNodes(numEasyNodes);
         attr.setNumHardNodes(numHardNodes);
+        attr.setNumberOfTrees(subtreeCount);
         attributeList.add(attr);
         
         return   attributeList;

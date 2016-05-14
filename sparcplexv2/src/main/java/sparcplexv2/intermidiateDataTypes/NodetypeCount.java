@@ -24,6 +24,8 @@ public class NodetypeCount implements Serializable {
     private int numEasyNodes;
     private int numHardNodes;
     
+    private int numberOfTrees;
+    
     public int getID () {
         return partitionID;
     }
@@ -35,6 +37,15 @@ public class NodetypeCount implements Serializable {
     public int getNumHardNodes () {
         return numHardNodes;
     }
+    
+    public int getNumberOfTrees () {
+        return numberOfTrees;
+    }
+    
+    public void setNumberOfTrees (int numberOfTrees) {
+        this.numberOfTrees= numberOfTrees;
+    }
+    
     
     public void setID (int id) {
         this.partitionID= id;
