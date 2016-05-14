@@ -228,7 +228,7 @@ public class Driver {
         avgNumOfEasyNodesPerCore = avgNumOfEasyNodesPerCore/Parameters.NUM_CORES;
         avgNumOfHardNodesPerCore = avgNumOfHardNodesPerCore/Parameters.NUM_CORES;
         
-        double timeSlice =     avgNumOfHardNodesPerCore*Parameters.HARD_NODE_TIME_SLICE_MAX_SECONDS * Constants.THOUSAND
+        double timeSlice =     avgNumOfHardNodesPerCore*Parameters.HARD_NODE_TIME_SLICE_SECONDS * Constants.THOUSAND
                                   + avgNumOfEasyNodesPerCore*Parameters.EASY_NODE_TIME_SLICE_SECONDS * Constants.THOUSAND;
         
         if  (timeSlice < Constants.THOUSAND*Parameters.ITERATION_TIME_MIN_SECONDS) timeSlice= Constants.THOUSAND*Parameters.ITERATION_TIME_MIN_SECONDS;

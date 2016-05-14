@@ -16,9 +16,8 @@ public class Parameters implements Serializable {
     public  static final  int NUM_CORES = CORES_PER_MACHINE * NUM_MACHINES ;
     
     public  static final  double EASY_NODE_TIME_SLICE_SECONDS =    0.5*60; 
-    public  static final  double HARD_NODE_TIME_SLICE_MAX_SECONDS =    3*60;
-    public  static final  double HARD_NODE_TIME_SLICE_MIN_SECONDS =    1*60; 
-    
+    public  static final  double HARD_NODE_TIME_SLICE_SECONDS =    3*60;
+      
     public  static final  int ITERATION_TIME_MIN_SECONDS =    3*60; 
     public  static final  int ITERATION_TIME_MAX_SECONDS =    30*60; 
     

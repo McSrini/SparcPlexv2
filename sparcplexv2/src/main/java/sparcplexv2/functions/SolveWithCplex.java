@@ -135,17 +135,17 @@ public class SolveWithCplex  implements PairFlatMapFunction<Iterator<Tuple2<Inte
             double timeLeftForHardNodesInPartition = 
                     wallClockTimeLeft  - easyNodesRemainingInPartition * Parameters.EASY_NODE_TIME_SLICE_SECONDS;
             
-            double surplusTime = timeLeftForHardNodesInPartition    - hardNodesRemainingInPartition*Parameters.HARD_NODE_TIME_SLICE_MAX_SECONDS;
+            double surplusTime = timeLeftForHardNodesInPartition    - hardNodesRemainingInPartition*Parameters.HARD_NODE_TIME_SLICE_SECONDS;
             
             if(surplusTime>Constants.ZERO){
                 //we try to use up surplus time right away
                 timeSliceForSubTree = surplusTime + 
-                        numberOfHardNodesInSubtree*Parameters.HARD_NODE_TIME_SLICE_MAX_SECONDS + 
+                        numberOfHardNodesInSubtree*Parameters.HARD_NODE_TIME_SLICE_SECONDS + 
                          + numberOfEasyNodesInSubTree*Parameters.EASY_NODE_TIME_SLICE_SECONDS;
             } else {
                 //divide remaining time equally between remaining subtrees. So get the fair share for this subtree.
-                timeSliceForSubTree = wallClockTimeLeft *  (numberOfHardNodesInSubtree*Parameters.HARD_NODE_TIME_SLICE_MAX_SECONDS    +numberOfEasyNodesInSubTree *Parameters.EASY_NODE_TIME_SLICE_SECONDS) ;
-                timeSliceForSubTree = timeSliceForSubTree/ (hardNodesRemainingInPartition*Parameters.HARD_NODE_TIME_SLICE_MAX_SECONDS +easyNodesRemainingInPartition * Parameters.EASY_NODE_TIME_SLICE_SECONDS) ;
+                timeSliceForSubTree = wallClockTimeLeft *  (numberOfHardNodesInSubtree*Parameters.HARD_NODE_TIME_SLICE_SECONDS    +numberOfEasyNodesInSubTree *Parameters.EASY_NODE_TIME_SLICE_SECONDS) ;
+                timeSliceForSubTree = timeSliceForSubTree/ (hardNodesRemainingInPartition*Parameters.HARD_NODE_TIME_SLICE_SECONDS +easyNodesRemainingInPartition * Parameters.EASY_NODE_TIME_SLICE_SECONDS) ;
                 
                 //solve subtree for at least EASY_NODE_TIME_SLICE_SECONDS , even if this sends us slightly over the time limit
                 if (timeSliceForSubTree <Parameters.EASY_NODE_TIME_SLICE_SECONDS ) timeSliceForSubTree=Parameters.EASY_NODE_TIME_SLICE_SECONDS;
