@@ -208,11 +208,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         
         //only hard nodes are potentially pruned and their children farmed
         if (parentNodeData.isEasy())    farmingDecision = false;
-        
-        //if this tree has only 1 node left, could be the root, do not prune the root and farm its kids
-        if (getNremainingNodes()==Constants.ONE)  farmingDecision = false;
-        
-       
+               
     }
 
     private boolean isChildEasy(){
