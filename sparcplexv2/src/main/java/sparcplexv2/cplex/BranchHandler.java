@@ -59,6 +59,9 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     
     private int depthOfSubTreeRoot ;
     
+    //set this flag if there is no point in solving this subtree any longer
+    private boolean abortFlag;
+    
     public BranchHandler(       NodeAttachment subTreeRoot ){
         
         this.subTreeRoot = subTreeRoot;
@@ -77,6 +80,12 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                 
         this.startingHardLeafnodeCount = startingHardLeafnodeCount;
         
+        abortFlag = false;
+        
+    }
+    
+    public boolean isAborted () {
+        return abortFlag;
     }
      
     public void setFarming (boolean doFarming) {
@@ -124,19 +133,8 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     
             if (haltingCondition()    ){
                 
-                //prune this node , no point in solving it or its children
-                //every remaining leaf node can be pruned as well
-                //
-                //Note that we take care not to prune the root of this subtree
-                if (getNodeData()!=null  ) {
-                    NodeAttachment thisNodeData =(NodeAttachment) getNodeData();
-                    if (thisNodeData.getDepth()>depthOfSubTreeRoot) {
-                        
-                        if (thisNodeData.isEasy()) numEasyNodesPruned++; else numHardNodesPruned++;
-                        prune();
-                        
-                    }
-                }                
+                abortFlag = true;
+                abort();
 
             } else {
                 //get the branches about to be created
@@ -201,13 +199,15 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         
         //default
         farmingDecision= farmingInstruction ; 
-                
-        //farm if th etree has grown too big
-        if ( this.startingHardLeafnodeCount + numHardNodesCreated - numHardNodesPruned > Parameters.THRESHOLD_MAX_HARD_LEAFS_PER_SUBTREE) 
-            farmingDecision = true; 
         
-        //only hard nodes are potentially pruned and their children farmed
-        if (parentNodeData.isEasy())    farmingDecision = false;
+        if (isSubtreeRoot() || parentNodeData.isEasy()) {
+            //do not farm the root node of any subtree
+            //only hard nodes are potentially pruned and their children farmed
+            farmingDecision = false;             
+        }  else  if ( this.startingHardLeafnodeCount + numHardNodesCreated - numHardNodesPruned > Parameters.THRESHOLD_MAX_HARD_LEAFS_PER_SUBTREE) {
+            //farm if the tree has grown too big
+            farmingDecision = true; 
+        }
                
     }
 
@@ -228,8 +228,36 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         boolean inferiorityHaltCondition = Parameters.isMaximization && (bestKnownOptimum>=getBestObjValue());
         inferiorityHaltCondition = inferiorityHaltCondition || ( ! Parameters.isMaximization && (bestKnownOptimum<=getBestObjValue())  );
         
+        //repeat the MIP condition check with my own incumbent  
+        if (hasIncumbent() ) {
+            double incumbentObjValue = getIncumbentObjValue();
+            
+            //MIP check
+            metric =  getBestObjValue() -incumbentObjValue ;
+            metric = metric /(Constants.EPSILON +incumbentObjValue);
+            
+            mipHaltCondition = mipHaltCondition || Parameters.RELATIVE_MIP_GAP >= Math.abs(metric)  ;            
+            
+        }
+        
         return  mipHaltCondition || inferiorityHaltCondition ;       
       
     }
 
+    private boolean isSubtreeRoot () throws IloException {
+        
+        boolean isRoot = true;
+        
+        if (getNodeData()!=null  ) {
+            NodeAttachment thisNodeData =(NodeAttachment) getNodeData();
+            if (thisNodeData.getDepth()>depthOfSubTreeRoot) {
+                
+                isRoot = false;
+                
+            }
+        }    
+        
+        return isRoot;
+        
+    }
 }

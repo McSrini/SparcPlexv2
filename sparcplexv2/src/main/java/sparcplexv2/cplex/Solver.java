@@ -56,6 +56,10 @@ public class Solver {
         return cplex.getStatus();
     }
     
+    public boolean isAborted () {
+        return branchHandler.isAborted();
+    }
+     
     public double getNumEasyNodesAdded(){
         return this.branchHandler.getNumEasyNodesCreated();
     }

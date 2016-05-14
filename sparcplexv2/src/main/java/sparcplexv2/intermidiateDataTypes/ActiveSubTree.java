@@ -39,6 +39,9 @@ public class ActiveSubTree { //note that this object is not serializable
  
     private NodeAttachment root ;
     
+    //set this flag if there is no point in solving this subtree any longer
+    private boolean abortFlag;
+    
     /**
      * 
      * @param attachment
@@ -63,6 +66,8 @@ public class ActiveSubTree { //note that this object is not serializable
         numHardLeafNodes=0;
         numEasyLeafNodes=0;
         if (attachment.isEasy()) numEasyLeafNodes++; else numHardLeafNodes++;
+        
+        abortFlag = false;
         
     }
     
@@ -106,7 +111,7 @@ public class ActiveSubTree { //note that this object is not serializable
     //solved to completion?
     public boolean isSolvedToCompletion () throws IloException {
         return cplex.getStatus().equals(IloCplex.Status.Error) || cplex.getStatus().equals(IloCplex.Status.Optimal)
-                ||cplex.getStatus().equals(IloCplex.Status.InfeasibleOrUnbounded) ;
+                ||cplex.getStatus().equals(IloCplex.Status.InfeasibleOrUnbounded) || isAborted();
     }
     
     public double getObjectiveValue() throws IloException {
@@ -131,6 +136,8 @@ public class ActiveSubTree { //note that this object is not serializable
                         
         //solve for some time
         solver.solve(timeSlice, doFarming,   bestKnownOptimum, numHardLeafNodes );
+        
+        if (solver.isAborted() ) abortFlag = true;
      
         numEasyLeafNodes += solver.getNumEasyNodesAdded()- solver.getNumEasyNodesPruned();
         numHardLeafNodes += solver.getNumHardNodesAdded()- solver.getNumHardNodesPruned();
@@ -138,4 +145,7 @@ public class ActiveSubTree { //note that this object is not serializable
         return solver.getFarmedOutNodes();
     }
   
+    public boolean isAborted () {
+        return abortFlag;
+    }
 }
