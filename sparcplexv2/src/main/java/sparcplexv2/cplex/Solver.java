@@ -37,6 +37,7 @@ public class Solver {
     public void setSolverParams() throws IloException {
         //depth first
         if (Parameters.isDepthFirstSearch) cplex.setParam(IloCplex.Param.MIP.Strategy.NodeSelect, Constants.ZERO);  
+        if (Parameters.RELATIVE_MIP_GAP>Constants.ZERO) cplex.setParam( IloCplex.Param.MIP.Tolerances.MIPGap, Parameters.RELATIVE_MIP_GAP);
         //mip gap
         //others
     }

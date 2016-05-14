@@ -228,18 +228,6 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         boolean inferiorityHaltCondition = Parameters.isMaximization && (bestKnownOptimum>=getBestObjValue());
         inferiorityHaltCondition = inferiorityHaltCondition || ( ! Parameters.isMaximization && (bestKnownOptimum<=getBestObjValue())  );
         
-        //repeat the MIP condition check with my own incumbent  
-        if (hasIncumbent() ) {
-            double incumbentObjValue = getIncumbentObjValue();
-            
-            //MIP check
-            metric =  getBestObjValue() -incumbentObjValue ;
-            metric = metric /(Constants.EPSILON +incumbentObjValue);
-            
-            mipHaltCondition = mipHaltCondition || Parameters.RELATIVE_MIP_GAP >= Math.abs(metric)  ;            
-            
-        }
-        
         return  mipHaltCondition || inferiorityHaltCondition ;       
       
     }
