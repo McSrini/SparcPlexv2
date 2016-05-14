@@ -186,6 +186,23 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                     
                     if (parentNodeData.isEasy()) numEasyNodesPruned++; else numHardNodesPruned++;
                     prune();
+                    
+                    /**
+                     * Note: it may be a good idea to abort instead of pruning. 
+                     * Make a note inside this node data that its kids were farmed out 
+                     * ( we may not even need the note since restart of the tree always starts at this node).
+                     * If the driver decided to move the kids from this node, then in the next iteration, we can prune this node.
+                     * 
+                     * Also, generation cycle time should be much less than solution cycle time.
+                     * Every subtree can be instructed to branch once and abort.
+                     * If enough nodes have been farmed out , we can enter solution phase, or else we can farm for another iteration.
+                     * 
+                     * May also be a good idea to farm very large trees ( since we anyway only allow a max tree size) , or 
+                     * very small trees, so that not much information is lost. Need to keep track of depth of node from subtree root.
+                     * 
+                     */
+                    
+                    
                 }   
                 
             }//if else halting condition
