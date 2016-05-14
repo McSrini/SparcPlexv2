@@ -91,13 +91,25 @@ public class Driver {
             
             //Now we know exactly how many easy and hard nodes are there in each partition
             //We can broadcast this if we want, or use it as an argument (currently not broadcasting)
+            
+            //should we farm?
+            boolean doFarming = ! isSolutionPhase(partitionNodetypeCounts);
+            
+            //farming phase need not last very long.
+            //We can instruct some partitions, and some subtrees in them, to generate 2 kids each, and then return.
+            //Upon return to the driver, check if we have enough new nodes for balancing the starving partitions.
+            //If yes, can enter solution phase. If no the farm for one more iteration ,and so on.
+            //
+            // When do  farming is false, SolveWithCplex would focus on solving, and farm only when a certain tree becomes too big.
+            //Other wise it would instruct every subtree to return after branching for the first time
+            //
+            
              
             //get a reasonable end time for this iteration.
             //this requires the average number of hard nodes per partition, and some other info
             Instant endTimeOnWorkerMachine = getIterationEndTime( partitionNodetypeCounts);
             
-            //should we farm?
-            boolean doFarming = ! isSolutionPhase(partitionNodetypeCounts);
+
             
             //if farming is needed, then make a better decision as to which subtrees on which partition should be farmed
             //Maybe better to farm small subtrees, or trees with nodes whose depth is closer to root ?
