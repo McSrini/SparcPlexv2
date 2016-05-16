@@ -167,7 +167,18 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                     if (farmingDecision) {
                         //we will collect the children and prune the parent
                         // this will effect the number of easy and hard nodes in the subtree
-                        farmedOutNodes.add(thisChild);                        
+                        farmedOutNodes.add(thisChild);       
+                        
+                        /**
+                         * Instead of farming the children, its a much better idea to farm the parent. ( as in PARALEX).
+                         * The parent's model and basis can be farmed out. ( if we farm a  child we have neither the model nor the basis).
+                         * 
+                         * If the farmed parent node is redistributed by the driver, then in the next iteration we can prune this parent from it original tree.
+                         * Otherwise just solve it again, and this time let its children spawn.
+                         * 
+                         */
+                        
+                        
                         
                     } else {
                         //   no farming     , just update counts and let the kids be created                   
