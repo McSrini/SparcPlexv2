@@ -10,10 +10,12 @@ import org.apache.log4j.Logger;
 
 
 
+
 import sparcplexv2.constantsAndParams.Constants;
 import sparcplexv2.constantsAndParams.Parameters;
 import sparcplexv2.intermidiateDataTypes.NodeAttachment;
 import ilog.concert.IloException;
+import ilog.concert.IloModel;
 import ilog.concert.IloNumVar;
 import ilog.cplex.IloCplex;
 import ilog.cplex.IloCplex.BranchDirection;
@@ -163,6 +165,19 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                     //apply the bound changes specific to this child
                     NodeAttachment thisChild  = UtilityLibrary.createChildNode( parentNodeData,
                             dirs[childNum], bounds[childNum], vars[childNum]  , isChildEasy() );   
+                    
+                    /**
+                     * Instead of farming out node attachment, try to farm out the model.
+                     * Not sure if this model corresponds to the branching node or the subtree root 
+                     * ( accordingly may need to apply variable bounds for this node)
+                     * 
+                     * The model is serializable, so may be able to use it directly with Spark. 
+                     * If not, then have to extract objective, variables, and constraints, and send primitive data types over the network.
+                     * This may or may not be better than reading the MPS file from disk, as we do now.
+                     * 
+                     */
+                    
+                    IloModel model = getModel();
                                   
                     if (farmingDecision) {
                         //we will collect the children and prune the parent
@@ -180,7 +195,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                         
                         //see lpex2.java, lpex6.java, and cplexserver.java for using basis and model 
                        
-                        
+                     
                         
                     } else {
                         //   no farming     , just update counts and let the kids be created                   
