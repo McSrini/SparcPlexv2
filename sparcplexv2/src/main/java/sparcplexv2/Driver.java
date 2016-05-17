@@ -194,6 +194,19 @@ public class Driver {
             //we now have the farmed out nodes, some of them shuffled around the network so that, 
             //when added to the existing frontier, the frontier will be more or less balanced.
             
+            /**
+             * There are 2 more options to consider.
+             * 
+             * The first is preemption. We have the option of preempting a subtree ( preferably one that has not been solved for a large time), and
+             * moving it to another partition. This can be done if there are not enough farmed out nodes available.
+             * 
+             * The second option is single step mode, whereby every tree is only solved till it branches for the first time.
+             * This should lead to very small cycle times, which is very good for SparcPlex, as cycle restart overhead is very low.
+             * The parent node which branched and was farmed can be pruned (or not ) in the next iteration, depending on whether it 
+             * was chosen for load balancing and moved to another partition.
+             * 
+             */
+            
             
             //STEP 5 : 
             //*****************************************************************************************************************            
