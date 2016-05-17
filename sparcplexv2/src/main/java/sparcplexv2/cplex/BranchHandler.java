@@ -129,16 +129,45 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     
     protected void main() throws IloException {
         
+        //is branching really required for this node?
+        boolean branchingRequired = true;
+        
         if ( getNbranches()> 0 ){   
             
             //tree is branching
     
+            //first check if entire tree can be discarded
             if (haltingCondition()    ){
                 
+                //no point solving this tree any longer 
                 abortFlag = true;
+                branchingRequired= false;
                 abort();
 
             } else {
+                
+                //check if this node can be discarded
+                if (this.canNodeBeDiscarded()) {
+                    
+                    //prune this node
+                    if (isSubtreeRoot()){
+                        //no point solving this tree any longer 
+                        abortFlag = true;
+                        abort();
+                    } else {
+                        //only this node is useless
+                        if (((NodeAttachment) getNodeData()).isEasy()) numEasyNodesPruned++; else numHardNodesPruned++;
+                        prune();
+                         
+                    }
+                    
+                    branchingRequired = false;
+                    
+                } 
+            }
+            
+            if (branchingRequired) {
+                
                 //get the branches about to be created
                 IloNumVar[][] vars = new IloNumVar[Constants.TWO][] ;
                 double[ ][] bounds = new double[Constants.TWO ][];
@@ -207,7 +236,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
 
                     
                     
-                } //end , get both kids
+                } //end , for loop , get both kids
                 
                 if (farmingDecision) {
                     //prune this node, we have collected its children
@@ -233,7 +262,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                     
                 }   
                 
-            }//if else halting condition
+            }//if else is branching required condition
   
         } //if get N branches
          
@@ -259,6 +288,19 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     private boolean isChildEasy(){
         //fill up later
         return false;
+    }
+    
+    private boolean canNodeBeDiscarded () throws IloException {
+        boolean result = false;
+
+        //not sure how to get the objective value of a node
+        double nodeObjValue = Constants.ZERO;
+        
+        result = Parameters.isMaximization  ? 
+                    (nodeObjValue <= getCutoff()) || (nodeObjValue <= bestKnownOptimum )  : 
+                    (nodeObjValue >= getCutoff()) || (nodeObjValue >= bestKnownOptimum );
+
+        return result;
     }
     
     private boolean haltingCondition(  ) throws IloException{        
