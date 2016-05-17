@@ -5,7 +5,6 @@ import ilog.concert.IloLPMatrix;
 import ilog.concert.IloNumVar;
 import ilog.cplex.IloCplex;
 import ilog.cplex.IloCplex.BranchDirection;
-import ilog.cplex.IloCplex.UnknownObjectException;
 
 import java.util.Map;
 import java.util.Map.Entry;

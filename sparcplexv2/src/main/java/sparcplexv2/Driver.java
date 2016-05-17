@@ -68,7 +68,7 @@ public class Driver {
             
             if ( numFrontierNodes== Constants.ZERO) {
                 
-                logger.debug(Messages.Complete_MSG + (iteration-1)) ;
+                logger.debug(Messages.Complete_MSG + iteration) ;
                 //we are done
                 break; 
                 

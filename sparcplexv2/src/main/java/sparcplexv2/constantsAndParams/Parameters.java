@@ -15,12 +15,12 @@ public class Parameters implements Serializable {
     public  static final  int NUM_MACHINES= 10;
     public  static final  int NUM_CORES = CORES_PER_MACHINE * NUM_MACHINES ;
     
-    public  static final  double EASY_NODE_TIME_SLICE_SECONDS =    0.5*60; 
-    public  static final  double HARD_NODE_TIME_SLICE_SECONDS =    3*60;
+    public  static final  double EASY_NODE_TIME_SLICE_SECONDS =    Constants.SIX; 
+    public  static final  double HARD_NODE_TIME_SLICE_SECONDS =    EASY_NODE_TIME_SLICE_SECONDS* Constants.TEN ;
       
-    public  static final  int ITERATION_TIME_MIN_SECONDS =    3*60; 
-    public  static final  int ITERATION_TIME_MAX_SECONDS =    30*60; 
-    
+    public  static final  double   ITERATION_TIME_MAX_SECONDS =    HARD_NODE_TIME_SLICE_SECONDS*Constants.TEN ; 
+    public  static final  double ITERATION_TIME_MIN_SECONDS =   ITERATION_TIME_MAX_SECONDS/Constants.TWO ; 
+        
     public  static final  int MAX_ITERATIONS =     100;
     
     //if a partition does not have at least this many leaf nodes, then its time to farm out child nodes for distribution

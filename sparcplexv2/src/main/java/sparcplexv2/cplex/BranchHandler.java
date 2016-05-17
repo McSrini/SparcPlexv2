@@ -178,6 +178,8 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                          * 
                          */
                         
+                        //see lpex2.java, lpex6.java, and cplexserver.java for using basis and model 
+                       
                         
                         
                     } else {
