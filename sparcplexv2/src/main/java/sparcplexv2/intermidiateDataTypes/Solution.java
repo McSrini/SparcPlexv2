@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import sparcplexv2.constantsAndParams.Constants;
+import sparcplexv2.constantsAndParams.Messages;
 import sparcplexv2.constantsAndParams.Parameters;
  
  
@@ -79,6 +80,11 @@ public class Solution implements Serializable {
         return isFeasible;
     }
     
+    
+    public boolean isFeasibleOrOptimal(){
+        return isFeasible || isOptimal;
+    }
+    
     public void setFeasible(boolean feasible){
         isFeasible=feasible;
     }
@@ -98,4 +104,16 @@ public class Solution implements Serializable {
         return objectiveValue;
     }
 
+    public String toString (){
+        String result = Messages.NoFeasibleSolution_MSG;
+        if (this.isFeasibleOrOptimal()){
+            result =isOptimal()? Messages.Optimum_MSG :Messages.Feasible_MSG  + this.getObjectiveValue() +"\n"  ;
+            
+            for (Map.Entry<String, Double >  entry :variableMap.entrySet()) {
+                result += entry.getKey() + " " + entry.getValue() +"\n";
+            }
+        }
+
+        return result;
+    }
 }

@@ -56,7 +56,8 @@ public class Driver {
         
 
         //loop till frontier is empty, or some iteration count or time limit is exceeded
-        for (int iteration = 0;iteration <Parameters.MAX_ITERATIONS;iteration++){ 
+        int iteration = 0;
+        for (;iteration <Parameters.MAX_ITERATIONS;iteration++){ 
             
             //STEP 0 : 
             //*****************************************************************************************************************
@@ -68,7 +69,6 @@ public class Driver {
             
             if ( numFrontierNodes== Constants.ZERO) {
                 
-                logger.debug(Messages.Complete_MSG + iteration) ;
                 //we are done
                 break; 
                 
@@ -204,6 +204,9 @@ public class Driver {
             
         
         } //end for - till frontier is empty OR iteration limit reached
+        
+        logger.info(Messages.Complete_MSG + iteration) ;
+        logger.info(incumbent); 
         
     } //end main
 
