@@ -207,6 +207,8 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                      */
                     
                     IloModel model = getModel();
+                    
+                    //not sure how to get basis, although lpex6.java  sets basis.
                                   
                     if (farmingDecision) {
                         //we will collect the children and prune the parent
