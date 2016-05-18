@@ -295,7 +295,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     private boolean canNodeBeDiscarded () throws IloException {
         boolean result = false;
 
-        //not sure how to get the objective value of a node, use LP relax value
+        //get LP relax value
         double nodeObjValue = getObjValue();
         
         result = Parameters.isMaximization  ? 
