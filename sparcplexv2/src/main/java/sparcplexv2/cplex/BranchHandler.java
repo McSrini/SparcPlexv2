@@ -296,7 +296,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         boolean result = false;
 
         //not sure how to get the objective value of a node
-        double nodeObjValue = Constants.ZERO;
+        double nodeObjValue = getObjValue();
         
         result = Parameters.isMaximization  ? 
                     (nodeObjValue <= getCutoff()) || (nodeObjValue <= bestKnownOptimum )  : 
