@@ -130,7 +130,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     protected void main() throws IloException {
         
         //is branching really required for this node?
-        boolean branchingRequired = true;
+        boolean isBranchingRequired = true;
         
         if ( getNbranches()> 0 ){   
             
@@ -141,7 +141,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                 
                 //no point solving this tree any longer 
                 abortFlag = true;
-                branchingRequired= false;
+                isBranchingRequired= false;
                 abort();
 
             } else {
@@ -161,12 +161,12 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                          
                     }
                     
-                    branchingRequired = false;
+                    isBranchingRequired = false;
                     
                 } 
             }
             
-            if (branchingRequired) {
+            if (isBranchingRequired) {
                 
                 //get the branches about to be created
                 IloNumVar[][] vars = new IloNumVar[Constants.TWO][] ;
@@ -295,7 +295,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     private boolean canNodeBeDiscarded () throws IloException {
         boolean result = false;
 
-        //not sure how to get the objective value of a node
+        //not sure how to get the objective value of a node, use LP relax value
         double nodeObjValue = getObjValue();
         
         result = Parameters.isMaximization  ? 
