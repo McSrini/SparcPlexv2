@@ -49,7 +49,10 @@ public class Driver {
         
         List<NodeAttachment> nodeList  = new ArrayList<NodeAttachment> ();
         nodeList.add(new NodeAttachment());
-        frontier =sc.parallelize(nodeList) .mapToPair( new PartitionKeyAdder(Constants.ZERO)).mapValues( new AttachmentConverter() ); 
+        frontier =sc.parallelize(nodeList) 
+                .mapToPair( new PartitionKeyAdder(Constants.ZERO)) // add the key # of the partition we want to place it on
+                .partitionBy(new HashPartitioner(Parameters.NUM_CORES)) //realize the movement to desired partition
+                .mapValues( new AttachmentConverter() ); //convert the attachment into an ActiveSubTree object 
          
         //initialize  the incumbent
         Solution incumbent = new Solution( ); 
