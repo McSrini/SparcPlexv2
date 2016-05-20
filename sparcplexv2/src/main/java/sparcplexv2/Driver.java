@@ -112,6 +112,13 @@ public class Driver {
             //this requires the average number of hard nodes per partition, and some other info
             Instant endTimeOnWorkerMachine = getIterationEndTime( partitionNodetypeCounts);
             
+            /**
+             * 
+             * As the cluster size increases, a lot of workers may be exploring subtrees which are not beneficial.
+             * So cluster size increases are not expected to result in proportionate speedup.
+             * Experiment with lower cycle times as cluster size grows.
+             * 
+             */
 
             
             //if farming is needed, then make a better decision as to which subtrees on which partition should be farmed
