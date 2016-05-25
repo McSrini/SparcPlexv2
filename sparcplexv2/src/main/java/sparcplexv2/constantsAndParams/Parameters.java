@@ -35,5 +35,8 @@ public class Parameters implements Serializable {
     
     public static final double RELATIVE_MIP_GAP  = 0.05; 
     
+    //implement this option - halt computation if we have got within 95% of LP relax of original problem
+    public static final double PERCENT_WITHIN_LP_RELAX_OF_ORIGINAL  = 0.95; 
+        
     public static final String LP_FILENAME = "/tmp/timtab1.mps";     
 }
