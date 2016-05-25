@@ -98,6 +98,12 @@ public class Driver {
             //should we farm?
             boolean doFarming = ! isSolutionPhase(partitionNodetypeCounts);
             
+            /**
+             * When farming, it may be better to switch to depth first.
+             * Basically, we do not want to farm out the best remaining node. 
+             * It may be a good idea to farm out the node which is least effected by losing cuts and basis, if we can determine which node this is.
+             */
+            
             //farming phase need not last very long.
             //We can instruct some partitions, and some subtrees in them, to generate 2 kids each, and then return.
             //Upon return to the driver, check if we have enough new nodes for balancing the starving partitions.
