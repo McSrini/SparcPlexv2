@@ -31,14 +31,17 @@ public class Solver {
         this.cplex=cplex;
         this.cplex.use(branchHandler);   
         setSolverParams();
+  
     
     }
     
     public void setSolverParams() throws IloException {
-        //depth first
-        if (Parameters.isDepthFirstSearch) cplex.setParam(IloCplex.Param.MIP.Strategy.NodeSelect, Constants.ZERO);  
+        //depth first?
+        if (Parameters.isDepthFirstSearch) cplex.setParam(IloCplex.Param.MIP.Strategy.NodeSelect, Constants.ZERO); 
+        
+        //MIP gap
         if (Parameters.RELATIVE_MIP_GAP>Constants.ZERO) cplex.setParam( IloCplex.Param.MIP.Tolerances.MIPGap, Parameters.RELATIVE_MIP_GAP);
-        //mip gap
+
         //others
     }
     

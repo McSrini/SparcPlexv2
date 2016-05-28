@@ -9,11 +9,19 @@ import ilog.concert.IloException;
  * 
  */
 
+
+
+
+
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 import org.apache.spark.HashPartitioner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -29,8 +37,12 @@ import sparcplexv2.intermidiateDataTypes.*;
 public class Driver {
     
     private static Logger logger=Logger.getLogger(Driver.class);
-    
-    public static void main(String[] args) throws IloException {
+        
+    public static void main(String[] args) throws IloException, IOException {
+        
+        logger.setLevel(Level.DEBUG);
+        PatternLayout layout = new PatternLayout("%d{ISO8601} [%t] %-5p %c %x - %m%n");         
+        logger.addAppender(new RollingFileAppender(layout,Parameters.DRIVER_LOG_FILE));
         
         //Driver for distributing the CPLEX  BnB solver on Spark
         SparkConf conf = new SparkConf().setAppName("SparcPlex V2");

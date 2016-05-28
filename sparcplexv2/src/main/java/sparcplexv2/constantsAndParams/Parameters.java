@@ -11,6 +11,10 @@ public class Parameters implements Serializable {
      * 
      */
     private static final long serialVersionUID = 8174972951213475878L;
+    public static final String DRIVER_LOG_FILE = "/tmp/sparcplexDriver.log";
+    public static final String WORKER_LOG_FILE = "/tmp/sparcplexWorker";
+    public static final String DOT_LOG  = ".log";
+    
     public  static final  int CORES_PER_MACHINE = 4;
     public  static final  int NUM_MACHINES= 10;
     public  static final  int NUM_CORES = CORES_PER_MACHINE * NUM_MACHINES ;

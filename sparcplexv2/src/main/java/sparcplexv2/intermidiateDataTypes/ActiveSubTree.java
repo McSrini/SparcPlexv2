@@ -5,7 +5,9 @@ import java.util.*;
 import ilog.concert.IloException;
 import ilog.cplex.IloCplex;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import sparcplexv2.constantsAndParams.Constants;
 import sparcplexv2.constantsAndParams.Parameters;
@@ -27,7 +29,7 @@ import sparcplexv2.cplex.UtilityLibrary;
 public class ActiveSubTree { //note that this object is not serializable
     
 
-    private static final Logger logger = Logger.getLogger(ActiveSubTree.class);
+    //private static final Logger logger = Logger.getLogger(ActiveSubTree.class);
 
     //the CPLEX object representing this partially solved tree 
     private  IloCplex cplex ;
@@ -41,7 +43,7 @@ public class ActiveSubTree { //note that this object is not serializable
     
     //set this flag if there is no point in solving this subtree any longer
     private boolean abortFlag;
-    
+     
     /**
      * 
      * @param attachment
@@ -68,6 +70,8 @@ public class ActiveSubTree { //note that this object is not serializable
         if (attachment.isEasy()) numEasyLeafNodes++; else numHardLeafNodes++;
         
         abortFlag = false;
+        
+        
         
     }
     

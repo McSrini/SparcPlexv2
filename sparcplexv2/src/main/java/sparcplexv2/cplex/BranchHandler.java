@@ -219,6 +219,10 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                          * Instead of farming the children, its a much better idea to farm the parent. ( as in PARALEX).
                          * The parent's model and basis can be farmed out. ( if we farm a  child we have neither the model nor the basis).
                          * 
+                         * Also see AdMIPex6.java . If we cannot get the basis, we can try a MIP start. In this case,
+                         * we need to farm out not just the node attachment , but also the variable values.
+                         * 
+                         * 
                          * If the farmed parent node is redistributed by the driver, then in the next iteration we can prune this parent from it original tree.
                          * Otherwise just solve it again, and this time let its children spawn.
                          * 
