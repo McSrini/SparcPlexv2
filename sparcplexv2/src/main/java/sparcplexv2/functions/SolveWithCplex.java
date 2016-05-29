@@ -65,7 +65,7 @@ public class SolveWithCplex  implements PairFlatMapFunction<Iterator<Tuple2<Inte
         
         //our return value
         List<Tuple2<Integer, SolverResult>> resultList = new ArrayList<Tuple2<Integer, SolverResult>>();
-        //our return value minus the key
+        //the new farmed out nodes created on this partition, which will be included in the return value
         List<  NodeAttachment>  farmedOutNodes  = new ArrayList< NodeAttachment> ();
         
         Tuple2<Integer, ActiveSubTree> inputTuple = null;
@@ -83,7 +83,7 @@ public class SolveWithCplex  implements PairFlatMapFunction<Iterator<Tuple2<Inte
             if (! subTree.isLoggingInitialized()) subTree.initLogging(partitionId);
             
             //find the number of easy and hard nodes in the partition
-            //this will only be done the first time
+            //this will only be done the first time this while loop is entered
             if (easyNodesRemainingInPartition+hardNodesRemainingInPartition==Constants.ZERO) {
                 //initialize these counts
                 for (NodetypeCount attr :partitionAttributeList){
