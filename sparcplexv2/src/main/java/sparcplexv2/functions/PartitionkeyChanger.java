@@ -31,7 +31,7 @@ public class PartitionkeyChanger implements PairFlatMapFunction<Iterator<Tuple2<
         while (iterator.hasNext()) {
             Tuple2<Integer, NodeAttachment> input = iterator.next();
             
-            int newpartitionKey = someFunction ( input._1,    reDistMap) ;
+            int newpartitionKey = getNewPartitionIdForNode ( input._1,    reDistMap) ;
             Tuple2<Integer, NodeAttachment> output = new Tuple2<Integer, NodeAttachment> (newpartitionKey, input._2);
             
             listWithKeyChanged.add(output);
@@ -41,7 +41,7 @@ public class PartitionkeyChanger implements PairFlatMapFunction<Iterator<Tuple2<
         
     }
     
-    private int someFunction (int oldKey,  NodeRedistributionMap reDistMap) {
+    private int getNewPartitionIdForNode (int oldKey,  NodeRedistributionMap reDistMap) {
         return Constants.ZERO;
     }
 

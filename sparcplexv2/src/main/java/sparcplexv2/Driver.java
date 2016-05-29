@@ -182,7 +182,7 @@ public class Driver {
             //We can perform the reduction in the driver (i.e. right here)
             List<Solution> solutionsFound = solutionsRDD.collect();
             for (Solution soln : solutionsFound) {
-                if ( Constants.ZERO == (new SolutionComparator()).compare(incumbent, soln))
+                if ( Constants.ZERO != (new SolutionComparator()).compare(incumbent, soln))
                     incumbent = soln;
             }
 

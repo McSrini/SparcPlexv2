@@ -104,7 +104,7 @@ public class SolveWithCplex  implements PairFlatMapFunction<Iterator<Tuple2<Inte
                 farmedOutNodes.addAll(  subTree.solve(timeSliceForSubTree, doFarming, bestKnownLocalOptimum.getObjectiveValue() ));     
                 Solution subTreeSolution = subTree.getSolution() ;
                 
-                if ( Constants.ZERO == (new SolutionComparator()).compare(bestKnownLocalOptimum, subTreeSolution))
+                if ( Constants.ZERO != (new SolutionComparator()).compare(bestKnownLocalOptimum, subTreeSolution))
                     bestKnownLocalOptimum = subTreeSolution;
                 
             }
