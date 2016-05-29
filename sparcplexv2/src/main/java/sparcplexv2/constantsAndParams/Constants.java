@@ -11,6 +11,12 @@ public class Constants implements Serializable {
     public static final double PLUS_INFINITY = 1000000000;
     public static final double MINUS_INFINITY = -1*PLUS_INFINITY;
     
+    public static final String DELIMITER = "______";
+    public static final String TAB = "    ";
+    public static final String NEWLINE = "\n";
+    public static final String BLANKSPACE = " ";
+    public static final String EMPTY_STRING = "";
+    
     public static final double EPSILON = 0.0000000001;
 
     public static final int ZERO = 0;

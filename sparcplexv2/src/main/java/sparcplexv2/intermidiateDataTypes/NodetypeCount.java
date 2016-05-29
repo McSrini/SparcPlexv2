@@ -2,6 +2,8 @@ package sparcplexv2.intermidiateDataTypes;
 
 import java.io.Serializable;
 
+import sparcplexv2.constantsAndParams.Constants;
+
 /**
  * 
  * for a subtree or node list in a partition ,   its easy and hard node counts
@@ -57,6 +59,12 @@ public class NodetypeCount implements Serializable {
     
     public void setNumHardNodes (int num) {
         this. numHardNodes=num;
+    }
+    
+    public String toString () {
+         
+        return (Constants.EMPTY_STRING +partitionID + Constants.BLANKSPACE +numEasyNodes+Constants.BLANKSPACE +numHardNodes+ Constants.BLANKSPACE +numberOfTrees);         
+        
     }
     
 }

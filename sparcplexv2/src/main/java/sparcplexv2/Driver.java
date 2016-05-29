@@ -69,6 +69,7 @@ public class Driver {
         //initialize  the incumbent
         Solution incumbent = new Solution( ); 
         
+        logger.debug(Messages.Frontier_MSG  ) ;
 
         //loop till frontier is empty, or some iteration count or time limit is exceeded
         int iteration = 0;
@@ -104,11 +105,15 @@ public class Driver {
                     frontier.mapPartitions (new SubtreeNodeCounter() );            
             List<NodetypeCount> partitionNodetypeCounts = partitionNodetypeCountRDD.collect();
             
+            logger.debug(Messages.Counted_MSG + getNodeCountsForPrinting(partitionNodetypeCounts) ) ;
+            
             //Now we know exactly how many easy and hard nodes are there in each partition
             //We can broadcast this if we want, or use it as an argument (currently not broadcasting)
             
             //should we farm?
             boolean doFarming = ! isSolutionPhase(partitionNodetypeCounts);
+            
+            logger.debug(Messages.Farm_MSG + doFarming  ) ;
             
             /**
              * When farming, it may be better to switch to depth first.
@@ -129,6 +134,8 @@ public class Driver {
             //get a reasonable end time for this iteration.
             //this requires the average number of hard nodes per partition, and some other info
             Instant endTimeOnWorkerMachine = getIterationEndTime( partitionNodetypeCounts);
+            
+            logger.debug(Messages.ITERATION_END_TIME_MSG + endTimeOnWorkerMachine  ) ;
             
             /**
              * 
@@ -158,6 +165,8 @@ public class Driver {
                     doFarming, incumbent ,  partitionNodetypeCounts);
             JavaPairRDD< Integer, SolverResult> resultsRDD  = frontier.mapPartitionsToPair( cplexSolver, true);
             
+            logger.debug(Messages.SOLVING_MSG  ) ;
+            
             resultsRDD.cache(); //used more than once
             resultsRDD.count(); //to force immediate computation
             
@@ -177,6 +186,7 @@ public class Driver {
                     incumbent = soln;
             }
 
+            logger.debug(Messages.Incumbent_MSG  +  incumbent.toString()) ;
             
             
             //STEP 4 : 
@@ -193,6 +203,8 @@ public class Driver {
             partitionNodetypeCountRDD =    filteredFrontier.mapPartitions (new SubtreeNodeCounter() );            
             partitionNodetypeCounts = partitionNodetypeCountRDD.collect();
             
+            logger.debug(Messages.Counted_MSG + getNodeCountsForPrinting(partitionNodetypeCounts) ) ;
+            
             // Get the freshly farmed out nodes. 
             //Keep the partition key, we will try to minimize node movement by changing as few keys as we can.
             //For details of redistribution, see the redistribution functions which follow
@@ -206,9 +218,13 @@ public class Driver {
                     farmedNodesRDD.mapPartitions(new NodeCounter(), true);
             List<NodetypeCount> newNodesTypecountPerPartition =newNodesTypecountPerPartitionRDD.collect();
             
+            logger.debug(Messages.FarmedNodes_MSG + getNodeCountsForPrinting(newNodesTypecountPerPartition) ) ;
+            
             //Maybe solve a small optimization problem, or use a heuristic, to decide which 
             //node goes where to achieve balancing while minimizing node movement.
             NodeRedistributionMap redistributionMap = (new NodeRedistributor(     newNodesTypecountPerPartition ,   partitionNodetypeCounts)).redistribute();
+            
+            logger.debug(Messages.Redistribution_MSG + redistributionMap.toString() ) ;
             
             //redistributionMap now contains instructions about which keys to change, i.e. which nodes to move and where to move them
             
@@ -292,6 +308,14 @@ public class Driver {
         
         return Instant.now().plusMillis((int)timeSlice );
                    
+    }
+    
+    private static String getNodeCountsForPrinting( List<NodetypeCount> partitionNodetypeCounts ) {
+        String result = Constants.EMPTY_STRING;
+        for (NodetypeCount nCount : partitionNodetypeCounts){
+            result.concat(nCount.toString());
+        }
+        return result;
     }
 
 }

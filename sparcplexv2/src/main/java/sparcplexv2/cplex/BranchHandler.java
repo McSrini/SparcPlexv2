@@ -11,7 +11,11 @@ import org.apache.log4j.Logger;
 
 
 
+
+
+
 import sparcplexv2.constantsAndParams.Constants;
+import sparcplexv2.constantsAndParams.Messages;
 import sparcplexv2.constantsAndParams.Parameters;
 import sparcplexv2.intermidiateDataTypes.NodeAttachment;
 import ilog.concert.IloException;
@@ -32,7 +36,8 @@ import ilog.cplex.IloCplex.BranchDirection;
  */
 public class BranchHandler  extends IloCplex.BranchCallback{
 
-    private static Logger logger=Logger.getLogger(BranchHandler.class);
+    private static Logger logger ;
+    private String activeSubtreeGuid;
     
     //root of the subtree which we are monitoring
     private NodeAttachment subTreeRoot;
@@ -43,7 +48,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
     private boolean farmingDecision;
     
     //list of leaf nodes farmed out of the tree
-    private  List<NodeAttachment> farmedOutNodes;
+    private  List<NodeAttachment> farmedOutNodeList;
     
     //keep track of new nodes created in the subtree
     private int numEasyNodesCreated ;
@@ -72,9 +77,15 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         reset(subTreeRoot.isEasy()?Constants.ZERO: Constants.ONE);
     }
     
+    public void initLogging (   Logger logger, String myGuid){
+        this.logger=logger;
+        activeSubtreeGuid=myGuid;
+        
+    }
+    
     //reset the branch handler, every time you start solving a partly solved tree for some more time
-    public void reset(int startingHardLeafnodeCount){
-        clearFarmedOutNodes();
+    public void reset(int startingHardLeafnodeCount     ){
+        clearFarmedOutNodeList();
         numHardNodesCreated=Constants.ZERO;
         numEasyNodesCreated=Constants.ZERO;
         numEasyNodesPruned =Constants.ZERO;
@@ -102,12 +113,12 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         startingHardLeafnodeCount = count;
     }
     
-    public  void clearFarmedOutNodes() {
-        farmedOutNodes = new ArrayList<NodeAttachment>();
+    public  void clearFarmedOutNodeList() {
+        farmedOutNodeList = new ArrayList<NodeAttachment>();
     }
     
     public  List<NodeAttachment>  getFarmedOutNodes() {
-        return farmedOutNodes;
+        return farmedOutNodeList;
     }
     
     public int getNumEasyNodesPruned(){
@@ -142,7 +153,8 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                 //no point solving this tree any longer 
                 abortFlag = true;
                 isBranchingRequired= false;
-                abort();
+                abort();               
+                
 
             } else {
                 
@@ -154,10 +166,14 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                         //no point solving this tree any longer 
                         abortFlag = true;
                         abort();
+                        
+                        logger.info(Messages.DiscardSubtree_Root_MSG + activeSubtreeGuid   );
+                        
                     } else {
                         //only this node is useless
                         if (((NodeAttachment) getNodeData()).isEasy()) numEasyNodesPruned++; else numHardNodesPruned++;
                         prune();
+                        logger.info(Messages.DiscardNode_MSG + activeSubtreeGuid   );
                          
                     }
                     
@@ -187,6 +203,8 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                 
                 //make a dynamic update to the farming decision, before letting the children spawn
                 makeFarmingDecison(parentNodeData);
+                logger.info(Messages.Farm_MSG + activeSubtreeGuid   );
+                
                 
                 //now get both kids 
                 for (int childNum = 0 ;childNum<getNbranches();  childNum++) {                      
@@ -213,7 +231,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
                     if (farmingDecision) {
                         //we will collect the children and prune the parent
                         // this will effect the number of easy and hard nodes in the subtree
-                        farmedOutNodes.add(thisChild);       
+                        farmedOutNodeList.add(thisChild);       
                         
                         /**
                          * Instead of farming the children, its a much better idea to farm the parent. ( as in PARALEX).
@@ -287,6 +305,7 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         }  else  if ( this.startingHardLeafnodeCount + numHardNodesCreated - numHardNodesPruned > Parameters.THRESHOLD_MAX_HARD_LEAFS_PER_SUBTREE) {
             //farm if the tree has grown too big
             farmingDecision = true; 
+            logger.info(Messages.Farm_TREE_toobig_MSG + activeSubtreeGuid   );
         }
                
     }
@@ -320,6 +339,9 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         //also halt if we cannot do better than existing solution
         boolean inferiorityHaltCondition = Parameters.isMaximization && (bestKnownOptimum>=getBestObjValue());
         inferiorityHaltCondition = inferiorityHaltCondition || ( ! Parameters.isMaximization && (bestKnownOptimum<=getBestObjValue())  );
+        
+        if (mipHaltCondition) logger.info(Messages.MIPHAlt_Subtree_MSG + activeSubtreeGuid   );
+        if (inferiorityHaltCondition) logger.info(Messages.InferiorHAlt_Subtree_MSG + activeSubtreeGuid   );
         
         return  mipHaltCondition || inferiorityHaltCondition ;       
       

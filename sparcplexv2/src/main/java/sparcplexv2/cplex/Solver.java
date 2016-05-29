@@ -2,6 +2,8 @@ package sparcplexv2.cplex;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import sparcplexv2.constantsAndParams.Constants;
 import sparcplexv2.constantsAndParams.Parameters;
 import sparcplexv2.intermidiateDataTypes.NodeAttachment;
@@ -45,11 +47,14 @@ public class Solver {
         //others
     }
     
-    public IloCplex.Status solve(double timeSliceInSeconds,   boolean doFarming, double bestKnownOptimum , int currentHardLeafnodeCount) throws IloException{
+    public IloCplex.Status solve(double timeSliceInSeconds,   boolean doFarming, double bestKnownOptimum , int currentHardLeafnodeCount
+            , Logger logger, String myGuid ) throws IloException{
         
         //reset the branch handler 
-        branchHandler.reset(currentHardLeafnodeCount );
+        branchHandler.reset(currentHardLeafnodeCount  );
+        branchHandler.initLogging(logger, myGuid);
         
+        //inform branch handler of farming instruction and current incumbent
         branchHandler.setFarming(doFarming);
         branchHandler.setBestKnownOptimum(bestKnownOptimum);
         

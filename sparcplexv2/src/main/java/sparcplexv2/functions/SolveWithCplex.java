@@ -78,6 +78,10 @@ public class SolveWithCplex  implements PairFlatMapFunction<Iterator<Tuple2<Inte
             partitionId = inputTuple._1;
             ActiveSubTree subTree = inputTuple._2;
             
+            //note that we supply every subtree with its partition ID, for logging purposes. 
+            //Every partition must have its own log, to prevent log corruption.
+            if (! subTree.isLoggingInitialized()) subTree.initLogging(partitionId);
+            
             //find the number of easy and hard nodes in the partition
             //this will only be done the first time
             if (easyNodesRemainingInPartition+hardNodesRemainingInPartition==Constants.ZERO) {
@@ -95,6 +99,7 @@ public class SolveWithCplex  implements PairFlatMapFunction<Iterator<Tuple2<Inte
             double timeSliceForSubTree = getTimeSliceForThisSubtree(  subTree);
             
             //solve the subtree if we have been alloted at least a few seconds
+            
             if (timeSliceForSubTree > Constants.ZERO  ){
                 farmedOutNodes.addAll(  subTree.solve(timeSliceForSubTree, doFarming, bestKnownLocalOptimum.getObjectiveValue() ));     
                 Solution subTreeSolution = subTree.getSolution() ;

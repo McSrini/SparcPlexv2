@@ -1,5 +1,6 @@
 package sparcplexv2.intermidiateDataTypes;
 
+import java.io.IOException;
 import java.util.*;
 
 import ilog.concert.IloException;
@@ -8,8 +9,10 @@ import ilog.cplex.IloCplex;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 
 import sparcplexv2.constantsAndParams.Constants;
+import sparcplexv2.constantsAndParams.Messages;
 import sparcplexv2.constantsAndParams.Parameters;
 import sparcplexv2.cplex.Solver;
 import sparcplexv2.cplex.UtilityLibrary;
@@ -28,9 +31,13 @@ import sparcplexv2.cplex.UtilityLibrary;
  */
 public class ActiveSubTree { //note that this object is not serializable
     
-
-    //private static final Logger logger = Logger.getLogger(ActiveSubTree.class);
-
+    //for logging
+    private String myGuid ;
+    private int myPartitionId;
+    private Logger logger ;
+    private boolean isLoggingInitialized = false;
+    
+    
     //the CPLEX object representing this partially solved tree 
     private  IloCplex cplex ;
     private int numEasyLeafNodes;
@@ -50,11 +57,15 @@ public class ActiveSubTree { //note that this object is not serializable
      * @throws IloException
      * 
      * Every active subtree starts its life as a tree created from a farmed out leaf node
+     * @throws IOException 
      */
-    public ActiveSubTree (NodeAttachment attachment) throws IloException {
+    public ActiveSubTree (NodeAttachment attachment) throws IloException, IOException {
         
         //note down the root
         root = attachment;
+        
+        //my unique ID
+        myGuid= UUID.randomUUID().toString();
         
         //initialize the CPLEX object
         cplex= new IloCplex();   
@@ -72,7 +83,25 @@ public class ActiveSubTree { //note that this object is not serializable
         abortFlag = false;
         
         
-        
+    }
+    
+    //initialize logging
+    public void initLogging (int partitionId) throws IOException {
+        if (! isLoggingInitialized){
+            
+            myGuid  = UUID.randomUUID().toString();
+            myPartitionId=partitionId;
+            
+            isLoggingInitialized = true;
+            logger= Logger.getLogger(ActiveSubTree.class);
+            logger.setLevel(Level.DEBUG);
+            PatternLayout layout = new PatternLayout("%d{ISO8601} [%t] %-5p %c %x - %m%n");         
+            logger.addAppender(new RollingFileAppender(layout,Parameters.WORKER_LOG_FILE + partitionId +Parameters.DOT_LOG));
+        } 
+    }
+    
+    public boolean isLoggingInitialized(){
+        return isLoggingInitialized;
     }
     
     public   NodeAttachment getRoot (){
@@ -137,15 +166,19 @@ public class ActiveSubTree { //note that this object is not serializable
      * @throws IloException 
      */
     public List<NodeAttachment> solve ( double timeSlice, boolean doFarming, double bestKnownOptimum  ) throws IloException{
-                        
+                
+        logger.debug(Messages.ActiveSubtreeSolve_MSG + this.myGuid + Constants.BLANKSPACE +timeSlice);
+        
         //solve for some time
-        solver.solve(timeSlice, doFarming,   bestKnownOptimum, numHardLeafNodes );
+        //note that we supply the logger and the active subtree GUID for logging purposes
+        solver.solve(timeSlice, doFarming,   bestKnownOptimum, numHardLeafNodes, logger , this.myGuid);
         
         if (solver.isAborted() ) abortFlag = true;
      
         numEasyLeafNodes += solver.getNumEasyNodesAdded()- solver.getNumEasyNodesPruned();
         numHardLeafNodes += solver.getNumHardNodesAdded()- solver.getNumHardNodesPruned();
         
+        logger.debug(this.myGuid+ Messages.ActiveSubtreeSolveComplete_MSG + timeSlice );
         return solver.getFarmedOutNodes();
     }
   
