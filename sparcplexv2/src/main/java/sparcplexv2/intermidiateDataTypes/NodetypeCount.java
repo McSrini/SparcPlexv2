@@ -61,6 +61,14 @@ public class NodetypeCount implements Serializable {
         this. numHardNodes=num;
     }
     
+    public void decrementNumHardNodes (int num) {
+        this. numHardNodes-=num;
+    }
+    
+    public void incrementNumHardNodes (int num) {
+        this. numHardNodes+=num;
+    }
+    
     public String toString () {
          
         return (Constants.EMPTY_STRING +partitionID + Constants.BLANKSPACE +numEasyNodes+Constants.BLANKSPACE +numHardNodes+ Constants.BLANKSPACE +numberOfTrees);         

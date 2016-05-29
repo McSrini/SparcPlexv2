@@ -6,6 +6,7 @@ import org.apache.spark.api.java.function.PairFlatMapFunction;
 
 import scala.Tuple2;
 import sparcplexv2.constantsAndParams.Constants;
+import sparcplexv2.constantsAndParams.Parameters;
 import sparcplexv2.intermidiateDataTypes.NodeAttachment;
 import sparcplexv2.intermidiateDataTypes.NodeRedistributionMap;
 
@@ -41,8 +42,45 @@ public class PartitionkeyChanger implements PairFlatMapFunction<Iterator<Tuple2<
         
     }
     
-    private int getNewPartitionIdForNode (int oldKey,  NodeRedistributionMap reDistMap) {
-        return Constants.ZERO;
+    /**
+     * returns the new partition for a node
+     * 
+     * The redistribution map tells us how many nodes from this partition should move to other partitions
+     * 
+     * the assumption here is that we can edit the redistribution map, as it is our local copy ( 1 copy per executor, 1 executor per core)
+     * 
+     * @param oldKey
+     * @param reDistMap
+     * @return
+     */
+    private int getNewPartitionIdForNode (int currentPartitionID,  NodeRedistributionMap reDistMap) {
+        
+        //default is to keep the partition ID the same as before
+        int newKey = currentPartitionID;
+        
+        if (reDistMap.makesDonations(currentPartitionID)){
+            
+            //move this node to the first destination partition 
+            int index = Constants.ZERO;
+            
+            for ( ;index< Parameters.NUM_CORES; index++){
+                
+                int count = reDistMap.getDonation( currentPartitionID, index) ;
+                if (count > Constants.ZERO) {
+                    
+                    //this is the destination partition id
+                    newKey = index;
+                    
+                    //before exiting, lower down the count, since we just donated one node
+                    reDistMap.addDonation(currentPartitionID, index, count-Constants.ONE);               
+                    
+                    break;
+                }
+            }            
+             
+        }
+        
+        return  newKey;
     }
 
 }

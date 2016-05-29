@@ -72,7 +72,7 @@ public class Driver {
         logger.debug(Messages.Frontier_MSG  ) ;
 
         //loop till frontier is empty, or some iteration count or time limit is exceeded
-        int iteration = 0;
+        int iteration = Constants.ZERO;
         for (;iteration <Parameters.MAX_ITERATIONS;iteration++){ 
             
             //STEP 0 : 
