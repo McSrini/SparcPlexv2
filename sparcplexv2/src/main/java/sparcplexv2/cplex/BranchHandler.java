@@ -1,8 +1,10 @@
 package sparcplexv2.cplex;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
  
  
@@ -14,9 +16,13 @@ import org.apache.log4j.Logger;
 
 
 
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
+
 import sparcplexv2.constantsAndParams.Constants;
 import sparcplexv2.constantsAndParams.Messages;
 import sparcplexv2.constantsAndParams.Parameters;
+import sparcplexv2.intermidiateDataTypes.ActiveSubTree;
 import sparcplexv2.intermidiateDataTypes.NodeAttachment;
 import ilog.concert.IloException;
 import ilog.concert.IloModel;
@@ -36,8 +42,9 @@ import ilog.cplex.IloCplex.BranchDirection;
  */
 public class BranchHandler  extends IloCplex.BranchCallback{
 
-    private static Logger logger ;
+    private   Logger logger ;
     private String activeSubtreeGuid;
+    private boolean isLoggingInitialized = false;
     
     //root of the subtree which we are monitoring
     private NodeAttachment subTreeRoot;
@@ -76,11 +83,21 @@ public class BranchHandler  extends IloCplex.BranchCallback{
         
         reset(subTreeRoot.isEasy()?Constants.ZERO: Constants.ONE);
     }
-    
-    public void initLogging (   Logger logger, String myGuid){
-        this.logger=logger;
-        activeSubtreeGuid=myGuid;
         
+    public boolean isLoggingInitialized(){
+        return isLoggingInitialized;
+    }
+   
+    public void initLogging (   String logfile, String myGuid) throws IOException{
+        if(! isLoggingInitialized){
+            logger= Logger.getLogger(BranchHandler.class);
+            logger.setLevel(Level.DEBUG);
+            PatternLayout layout = new PatternLayout("%d{ISO8601} [%t] %-5p %c %x - %m%n"); 
+            logger.addAppender(new RollingFileAppender(layout,logfile));
+            activeSubtreeGuid=myGuid;
+            isLoggingInitialized = true;
+        }
+
     }
     
     //reset the branch handler, every time you start solving a partly solved tree for some more time

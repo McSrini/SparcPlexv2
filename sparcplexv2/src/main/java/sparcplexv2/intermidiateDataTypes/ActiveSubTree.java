@@ -35,6 +35,7 @@ public class ActiveSubTree { //note that this object is not serializable
     private String myGuid ;
     private int myPartitionId;
     private Logger logger ;
+    private String logfile;
     private boolean isLoggingInitialized = false;
     
     
@@ -95,8 +96,9 @@ public class ActiveSubTree { //note that this object is not serializable
             isLoggingInitialized = true;
             logger= Logger.getLogger(ActiveSubTree.class);
             logger.setLevel(Level.DEBUG);
-            PatternLayout layout = new PatternLayout("%d{ISO8601} [%t] %-5p %c %x - %m%n");         
-            logger.addAppender(new RollingFileAppender(layout,Parameters.WORKER_LOG_FILE + partitionId +Parameters.DOT_LOG));
+            PatternLayout layout = new PatternLayout("%d{ISO8601} [%t] %-5p %c %x - %m%n"); 
+            logfile = Parameters.WORKER_LOG_FILE + partitionId +Parameters.DOT_LOG;
+            logger.addAppender(new RollingFileAppender(layout,logfile));
         } 
     }
     
@@ -164,14 +166,15 @@ public class ActiveSubTree { //note that this object is not serializable
      * Solve this subtree for some time, and return any farmed out nodes.
      * Update the number of leafs in this subtree after solving
      * @throws IloException 
+     * @throws IOException 
      */
-    public List<NodeAttachment> solve ( double timeSlice, boolean doFarming, double bestKnownOptimum  ) throws IloException{
+    public List<NodeAttachment> solve ( double timeSlice, boolean doFarming, double bestKnownOptimum  ) throws IloException, IOException{
                 
         logger.debug(Messages.ActiveSubtreeSolve_MSG + this.myGuid + Constants.BLANKSPACE +timeSlice);
         
         //solve for some time
-        //note that we supply the logger and the active subtree GUID for logging purposes
-        solver.solve(timeSlice, doFarming,   bestKnownOptimum, numHardLeafNodes, logger , this.myGuid);
+        //note that we supply the log file and the active subtree GUID for logging purposes
+        solver.solve(timeSlice, doFarming,   bestKnownOptimum, numHardLeafNodes, logfile , this.myGuid);
         
         if (solver.isAborted() ) abortFlag = true;
      
