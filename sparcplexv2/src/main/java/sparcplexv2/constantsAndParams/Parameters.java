@@ -17,7 +17,7 @@ public class Parameters implements Serializable {
     
     public  static final  int CORES_PER_MACHINE = 4;
     public  static final  int NUM_MACHINES= 10;
-    public  static final  int NUM_CORES = CORES_PER_MACHINE * NUM_MACHINES ;
+    public  static final  int NUM_CORES = CORES_PER_MACHINE * NUM_MACHINES ; //may have to subtract 1 core, which will be taken up by the driver
     
     public  static final  double EASY_NODE_TIME_SLICE_SECONDS =    Constants.SIX; 
     public  static final  double HARD_NODE_TIME_SLICE_SECONDS =    EASY_NODE_TIME_SLICE_SECONDS* Constants.TEN ;
