@@ -169,7 +169,10 @@ public class ActiveSubTree { //note that this object is not serializable
      * @throws IOException 
      */
     public List<NodeAttachment> solve ( double timeSlice, boolean doFarming, double bestKnownOptimum  ) throws IloException, IOException{
-                
+        
+        //instead of double bestKnownOptimum, supply the variable vector as well, and
+        //use it to supply MIP start
+        
         logger.debug(Messages.ActiveSubtreeSolve_MSG + this.myGuid + Constants.BLANKSPACE +timeSlice);
         
         //solve for some time
