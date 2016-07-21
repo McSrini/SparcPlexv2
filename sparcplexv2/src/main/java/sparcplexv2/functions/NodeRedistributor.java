@@ -49,6 +49,8 @@ public class NodeRedistributor {
          * 
          */
         
+        //TODO : heuristic should try to minimize the time lost by migrating the parent node, and having to solve its LP relaxation again.
+        
         //Also we have the drastic option of aborting a subtree being solved, and restarting it on another partition
         
         //HEURISTIC:
