@@ -40,6 +40,19 @@ import ilog.cplex.IloCplex.BranchDirection;
  *  Or do no farming, simply keep track of the new leaf nodes added to the solution tree.
  *
  */
+
+/*
+ 
+ to important do notes from meeting:
+ 
+ 1) use sav file , not lp; read lp on master and distribute ; keep in memory so you dont have to go back to disk
+ 2) lp relax time should be low for migrated nodes, farm shallow node so less info is lost
+ 3) also look getlb(), getub() for non branching vars,  for int vars only. Use the bounds along with branching variable bounds.
+ 4) discard entire tree before branch handler, if the tree is inferior
+
+ */
+
+
 public class BranchHandler  extends IloCplex.BranchCallback{
 
     private   Logger logger ;
